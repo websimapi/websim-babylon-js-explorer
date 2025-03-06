@@ -1,0 +1,63 @@
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Babylon.js Explorer</title>
+    <link rel="stylesheet" href="styles.css">
+    <!-- Monaco Editor CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/monaco-editor@0.34.0/min/vs/loader.js"></script>
+    <!-- Babylon.js Core -->
+    <script src="https://cdn.babylonjs.com/babylon.js"></script>
+    <!-- Babylon.js Additional Libraries -->
+    <script src="https://cdn.babylonjs.com/materialsLibrary/babylonjs.materials.min.js"></script>
+    <script src="https://cdn.babylonjs.com/loaders/babylonjs.loaders.min.js"></script>
+    <script src="https://cdn.babylonjs.com/postProcessesLibrary/babylonjs.postProcess.min.js"></script>
+    <script src="https://cdn.babylonjs.com/proceduralTexturesLibrary/babylonjs.proceduralTextures.min.js"></script>
+    <script src="https://cdn.babylonjs.com/serializers/babylonjs.serializers.min.js"></script>
+    <script src="https://cdn.babylonjs.com/gui/babylon.gui.min.js"></script>
+    <script src="https://cdn.babylonjs.com/inspector/babylon.inspector.bundle.js"></script>
+</head>
+<body>
+    <div class="container">
+        <div class="sidebar">
+            <div class="sidebar-header">
+                <h2>Babylon.js Explorer</h2>
+            </div>
+            <div class="library-selector">
+                <select id="librarySelect">
+                    <option value="BABYLON">BABYLON (Core)</option>
+                    <option value="BABYLON.GUI">BABYLON.GUI</option>
+                    <option value="BABYLON.Materials">BABYLON.Materials</option>
+                    <option value="BABYLON.PostProcesses">BABYLON.PostProcesses</option>
+                    <option value="BABYLON.ProceduralTextures">BABYLON.ProceduralTextures</option>
+                    <option value="BABYLON.Serializers">BABYLON.Serializers</option>
+                </select>
+            </div>
+            <div class="search-bar">
+                <input type="text" id="searchInput" placeholder="Search APIs...">
+            </div>
+            <div class="api-tree-container">
+                <ul id="apiTree" class="api-tree"></ul>
+            </div>
+        </div>
+        <div class="main-content">
+            <div class="editor-container">
+                <div id="codeEditor"></div>
+                <div class="editor-controls">
+                    <button id="runButton">Run Code</button>
+                    <button id="clearButton">Clear</button>
+                </div>
+            </div>
+            <div class="viewer-container">
+                <canvas id="renderCanvas"></canvas>
+                <div class="viewer-controls">
+                    <button id="inspectorButton">Toggle Inspector</button>
+                    <button id="resetViewButton">Reset View</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script src="script.js"></script>
+<script defer src="https://static.cloudflareinsights.com/beacon.min.js/v8c78df7c7c0f484497ecbca7046644da1771523124516" integrity="sha512-8DS7rgIrAmghBFwoOTujcf6D9rXvH8xm8JQ1Ja01h9QX8EzXldiszufYa4IFfKdLUKTTrnSFXLDkUEOTrZQ8Qg==" data-cf-beacon='{"version":"2024.11.0","token":"4c6229722a6346bc8eb5cb0e5eae5d41","server_timing":{"name":{"cfCacheStatus":true,"cfEdge":true,"cfExtPri":true,"cfL4":true,"cfOrigin":true,"cfSpeedBrain":true},"location_startswith":null}}' crossorigin="anonymous"></script>
+</body>
+</html>

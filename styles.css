@@ -1,0 +1,140 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: Arial, sans-serif;
+}
+
+body, html {
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+}
+
+.container {
+    display: flex;
+    width: 100%;
+    height: 100%;
+}
+
+.sidebar {
+    width: 300px;
+    height: 100%;
+    background-color: #2d2d2d;
+    color: #ffffff;
+    display: flex;
+    flex-direction: column;
+    border-right: 1px solid #444;
+}
+
+.sidebar-header {
+    padding: 15px;
+    border-bottom: 1px solid #444;
+}
+
+.sidebar-header h2 {
+    font-size: 1.2rem;
+}
+
+.library-selector, .search-bar {
+    padding: 10px;
+    border-bottom: 1px solid #444;
+}
+
+.library-selector select, .search-bar input {
+    width: 100%;
+    padding: 8px;
+    background-color: #3d3d3d;
+    color: #ffffff;
+    border: 1px solid #555;
+    outline: none;
+    border-radius: 3px;
+}
+
+.api-tree-container {
+    flex: 1;
+    overflow-y: auto;
+    padding: 10px;
+}
+
+.api-tree {
+    list-style-type: none;
+}
+
+.api-tree li {
+    margin: 3px 0;
+}
+
+.api-tree-item {
+    cursor: pointer;
+    padding: 5px;
+    border-radius: 3px;
+}
+
+.api-tree-item:hover {
+    background-color: #3d3d3d;
+}
+
+.main-content {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+}
+
+.editor-container, .viewer-container {
+    flex: 1;
+    position: relative;
+    border-bottom: 1px solid #444;
+}
+
+#codeEditor {
+    width: 100%;
+    height: calc(100% - 40px);
+}
+
+#renderCanvas {
+    width: 100%;
+    height: calc(100% - 40px);
+    display: block;
+    touch-action: none;
+}
+
+.editor-controls, .viewer-controls {
+    height: 40px;
+    background-color: #2d2d2d;
+    display: flex;
+    align-items: center;
+    padding: 0 10px;
+}
+
+button {
+    background-color: #4d4d4d;
+    color: #ffffff;
+    border: none;
+    padding: 8px 15px;
+    margin-right: 10px;
+    cursor: pointer;
+    border-radius: 3px;
+}
+
+button:hover {
+    background-color: #5d5d5d;
+}
+
+.method {
+    color: #4DA6FF;
+}
+
+.property {
+    color: #FF8C4D;
+}
+
+.class {
+    color: #7CFC00;
+}
+
+.namespace {
+    color: #E066FF;
+}
+
