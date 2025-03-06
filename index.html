@@ -16,6 +16,14 @@
     <script src="https://cdn.babylonjs.com/serializers/babylonjs.serializers.min.js"></script>
     <script src="https://cdn.babylonjs.com/gui/babylon.gui.min.js"></script>
     <script src="https://cdn.babylonjs.com/inspector/babylon.inspector.bundle.js"></script>
+    <!-- Import map for module handling -->
+    <script type="importmap">
+        {
+            "imports": {
+                "app/": "./js/"
+            }
+        }
+    </script>
 </head>
 <body>
     <div class="container">
@@ -39,6 +47,9 @@
             <div class="api-tree-container">
                 <ul id="apiTree" class="api-tree"></ul>
             </div>
+            <div class="export-container">
+                <button id="exportButton">Export API Data</button>
+            </div>
         </div>
         <div class="main-content">
             <div class="editor-container">
@@ -57,7 +68,10 @@
             </div>
         </div>
     </div>
-    <script src="script.js"></script>
+    <!-- Hidden textarea for copying -->
+    <textarea id="exportArea" style="position: absolute; left: -9999px;"></textarea>
+    <!-- Main script using modules -->
+    <script type="module" src="js/main.js"></script>
 <script defer src="https://static.cloudflareinsights.com/beacon.min.js/v8c78df7c7c0f484497ecbca7046644da1771523124516" integrity="sha512-8DS7rgIrAmghBFwoOTujcf6D9rXvH8xm8JQ1Ja01h9QX8EzXldiszufYa4IFfKdLUKTTrnSFXLDkUEOTrZQ8Qg==" data-cf-beacon='{"version":"2024.11.0","token":"4c6229722a6346bc8eb5cb0e5eae5d41","server_timing":{"name":{"cfCacheStatus":true,"cfEdge":true,"cfExtPri":true,"cfL4":true,"cfOrigin":true,"cfSpeedBrain":true},"location_startswith":null}}' crossorigin="anonymous"></script>
 </body>
 </html>

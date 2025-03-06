@@ -138,3 +138,36 @@ button:hover {
     color: #E066FF;
 }
 
+.export-container {
+    padding: 10px;
+    border-top: 1px solid #444;
+    text-align: center;
+}
+
+#exportButton {
+    width: 100%;
+    background-color: #007acc;
+}
+
+#exportButton:hover {
+    background-color: #0091ea;
+}
+
+.notification {
+    position: fixed;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    background-color: #333;
+    color: white;
+    padding: 10px 20px;
+    border-radius: 4px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.3);
+    opacity: 0;
+    transition: opacity 0.3s;
+    z-index: 1000;
+}
+
+.notification.show {
+    opacity: 1;
+}

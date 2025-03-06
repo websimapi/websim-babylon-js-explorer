@@ -1,186 +1,10 @@
-// Initialize the Monaco editor and Babylon.js scene
-let editor;
-let scene;
-let engine;
-let apiData = {};
-
-// Wait for the window to load
-window.addEventListener('load', function() {
-    // Initialize Monaco Editor
-    require.config({ paths: { 'vs': 'https://cdn.jsdelivr.net/npm/monaco-editor@0.34.0/min/vs' }});
-    require(['vs/editor/editor.main'], function() {
-        editor = monaco.editor.create(document.getElementById('codeEditor'), {
-            value: getDefaultCode(),
-            language: 'javascript',
-            theme: 'vs-dark',
-            automaticLayout: true
-        });
-    });
-
-    // Initialize Babylon.js scene
-    initBabylonScene();
-
-    // Extract API information from all libraries
-    extractAPIInfo();
-
-    // Set up event listeners
-    setupEventListeners();
-});
-
-function getDefaultCode() {
-    return `// Create a simple scene with a sphere
-function createScene() {
-    // Create a basic Babylon Scene object
-    const scene = new BABYLON.Scene(engine);
-    
-    // Create a camera
-    const camera = new BABYLON.ArcRotateCamera("camera", 
-        Math.PI / 2, Math.PI / 2.5, 10, 
-        new BABYLON.Vector3(0, 0, 0), scene);
-    camera.attachControl(canvas, true);
-    
-    // Create a light
-    const light = new BABYLON.HemisphericLight("light", 
-        new BABYLON.Vector3(0, 1, 0), scene);
-    
-    // Create a sphere
-    const sphere = BABYLON.MeshBuilder.CreateSphere("sphere", 
-        {diameter: 2, segments: 32}, scene);
-    
-    // Create a material
-    const material = new BABYLON.StandardMaterial("material", scene);
-    material.diffuseColor = new BABYLON.Color3(0, 0.5, 0.7);
-    sphere.material = material;
-    
-    return scene;
-}
-
-// Call createScene to get our scene
-const createdScene = createScene();
-
-// Make sure to return the created scene
-return createdScene;`;
-}
-
-function initBabylonScene() {
-    const canvas = document.getElementById("renderCanvas");
-    engine = new BABYLON.Engine(canvas, true);
-    
-    // Create empty scene initially
-    scene = new BABYLON.Scene(engine);
-    
-    // Create a camera for the empty scene
-    const camera = new BABYLON.ArcRotateCamera("camera", Math.PI / 2, Math.PI / 2.5, 10, new BABYLON.Vector3(0, 0, 0), scene);
-    camera.attachControl(canvas, true);
-    
-    // Add a light
-    const light = new BABYLON.HemisphericLight("light", new BABYLON.Vector3(0, 1, 0), scene);
-    
-    // Run the render loop
-    engine.runRenderLoop(function() {
-        scene.render();
-    });
-    
-    // Handle window resize
-    window.addEventListener("resize", function() {
-        engine.resize();
-    });
-}
-
-function setupEventListeners() {
-    // Run Code button
-    document.getElementById('runButton').addEventListener('click', function() {
-        runCode();
-    });
-    
-    // Clear button
-    document.getElementById('clearButton').addEventListener('click', function() {
-        editor.setValue(getDefaultCode());
-    });
-    
-    // Toggle Inspector button
-    document.getElementById('inspectorButton').addEventListener('click', function() {
-        if (scene.debugLayer.isVisible()) {
-            scene.debugLayer.hide();
-        } else {
-            scene.debugLayer.show();
-        }
-    });
-    
-    // Reset View button
-    document.getElementById('resetViewButton').addEventListener('click', function() {
-        if (scene.cameras.length > 0) {
-            if (scene.cameras[0] instanceof BABYLON.ArcRotateCamera) {
-                scene.cameras[0].alpha = Math.PI / 2;
-                scene.cameras[0].beta = Math.PI / 2.5;
-                scene.cameras[0].radius = 10;
-            }
-        }
-    });
-    
-    // Library selector change
-    document.getElementById('librarySelect').addEventListener('change', function() {
-        populateAPITree(this.value);
-    });
-    
-    // Search input
-    document.getElementById('searchInput').addEventListener('input', function() {
-        const searchText = this.value.toLowerCase();
-        filterAPITree(searchText);
-    });
-}
-
-function runCode() {
-    try {
-        // Dispose old scene
-        if (scene) {
-            scene.dispose();
-        }
-        
-        // Get canvas
-        const canvas = document.getElementById("renderCanvas");
-        
-        // Evaluate the code from the editor to create a new scene
-        const createSceneFunction = new Function('engine', 'canvas', editor.getValue());
-        scene = createSceneFunction(engine, canvas);
-        
-        // Check if the scene was created correctly
-        if (!scene || !(scene instanceof BABYLON.Scene)) {
-            throw new Error("The code did not return a valid Babylon.js Scene.");
-        }
-        
-        // Update the render loop
-        engine.runRenderLoop(function() {
-            scene.render();
-        });
-        
-        // Show success message
-        console.log("Scene created successfully");
-    } catch (error) {
-        console.error("Error running code:", error);
-        // Create a simple scene with an error message
-        scene = new BABYLON.Scene(engine);
-        const camera = new BABYLON.ArcRotateCamera("camera", Math.PI / 2, Math.PI / 2.5, 10, new BABYLON.Vector3(0, 0, 0), scene);
-        camera.attachControl(canvas, true);
-        const light = new BABYLON.HemisphericLight("light", new BABYLON.Vector3(0, 1, 0), scene);
-        
-        // Display error using GUI
-        const advancedTexture = BABYLON.GUI.AdvancedDynamicTexture.CreateFullscreenUI("UI");
-        const errorText = new BABYLON.GUI.TextBlock();
-        errorText.text = "Error: " + error.message;
-        errorText.color = "red";
-        errorText.fontSize = 24;
-        advancedTexture.addControl(errorText);
-    }
-}
-
-function extractAPIInfo() {
+export function extractAPIInfo() {
     // Core Babylon.js
-    apiData.BABYLON = extractObjectMethods(BABYLON);
+    window.apiData.BABYLON = extractObjectMethods(BABYLON);
     
     // GUI
     if (BABYLON.GUI) {
-        apiData["BABYLON.GUI"] = extractObjectMethods(BABYLON.GUI);
+        window.apiData["BABYLON.GUI"] = extractObjectMethods(BABYLON.GUI);
     }
     
     // Materials
@@ -190,7 +14,7 @@ function extractAPIInfo() {
             materials[key] = BABYLON[key];
         }
     }
-    apiData["BABYLON.Materials"] = extractObjectMethods(materials);
+    window.apiData["BABYLON.Materials"] = extractObjectMethods(materials);
     
     // Post Processes
     const postProcesses = {};
@@ -199,7 +23,7 @@ function extractAPIInfo() {
             postProcesses[key] = BABYLON[key];
         }
     }
-    apiData["BABYLON.PostProcesses"] = extractObjectMethods(postProcesses);
+    window.apiData["BABYLON.PostProcesses"] = extractObjectMethods(postProcesses);
     
     // Procedural Textures
     const proceduralTextures = {};
@@ -210,7 +34,7 @@ function extractAPIInfo() {
             }
         }
     }
-    apiData["BABYLON.ProceduralTextures"] = extractObjectMethods(proceduralTextures);
+    window.apiData["BABYLON.ProceduralTextures"] = extractObjectMethods(proceduralTextures);
     
     // Serializers
     const serializers = {};
@@ -220,13 +44,13 @@ function extractAPIInfo() {
             serializers.GLTFFileLoader = BABYLON.GLTFFileLoader;
         }
     }
-    apiData["BABYLON.Serializers"] = extractObjectMethods(serializers);
+    window.apiData["BABYLON.Serializers"] = extractObjectMethods(serializers);
     
     // Populate the initial API tree
     populateAPITree("BABYLON");
 }
 
-function extractObjectMethods(obj) {
+export function extractObjectMethods(obj) {
     const result = {};
     
     // Handle null or undefined
@@ -287,11 +111,11 @@ function extractPrototypeMembers(prototype, result) {
     });
 }
 
-function populateAPITree(namespace) {
+export function populateAPITree(namespace) {
     const apiTree = document.getElementById('apiTree');
     apiTree.innerHTML = '';
     
-    const data = apiData[namespace];
+    const data = window.apiData[namespace];
     if (!data) return;
     
     // Sort keys alphabetically
@@ -307,7 +131,9 @@ function populateAPITree(namespace) {
         
         // Add click handler to insert code
         div.addEventListener('click', function() {
-            insertCodeSnippet(namespace, key, item.type);
+            import('./editor.js').then(module => {
+                module.insertCodeSnippet(namespace, key, item.type);
+            });
         });
         
         li.appendChild(div);
@@ -329,7 +155,9 @@ function populateAPITree(namespace) {
                     staticDiv.setAttribute('data-type', staticItem.type);
                     staticDiv.addEventListener('click', function(e) {
                         e.stopPropagation();
-                        insertCodeSnippet(namespace, `${key}.${staticKey}`, staticItem.type);
+                        import('./editor.js').then(module => {
+                            module.insertCodeSnippet(namespace, `${key}.${staticKey}`, staticItem.type);
+                        });
                     });
                     staticLi.appendChild(staticDiv);
                     ul.appendChild(staticLi);
@@ -347,7 +175,9 @@ function populateAPITree(namespace) {
                     protoDiv.setAttribute('data-type', protoItem.type);
                     protoDiv.addEventListener('click', function(e) {
                         e.stopPropagation();
-                        insertCodeSnippet(namespace, `${key}.prototype.${protoKey}`, protoItem.type);
+                        import('./editor.js').then(module => {
+                            module.insertCodeSnippet(namespace, `${key}.prototype.${protoKey}`, protoItem.type);
+                        });
                     });
                     protoLi.appendChild(protoDiv);
                     ul.appendChild(protoLi);
@@ -367,7 +197,7 @@ function populateAPITree(namespace) {
     });
 }
 
-function filterAPITree(searchText) {
+export function filterAPITree(searchText) {
     const items = document.querySelectorAll('.api-tree-item');
     items.forEach(item => {
         const parent = item.parentElement;
@@ -401,22 +231,14 @@ function filterAPITree(searchText) {
     });
 }
 
-function insertCodeSnippet(namespace, key, type) {
-    let snippet = '';
+export function exportAPIData() {
+    const exportData = JSON.stringify(window.apiData, null, 2);
+    const exportArea = document.getElementById('exportArea');
+    exportArea.value = exportData;
+    exportArea.select();
+    document.execCommand('copy');
     
-    if (type === 'method') {
-        snippet = `${key}()`;
-    } else if (type === 'property') {
-        snippet = key;
-    } else if (type === 'class') {
-        snippet = `new ${key}()`;
-    }
-    
-    editor.trigger('keyboard', 'type', {
-        text: snippet
+    import('./utils.js').then(module => {
+        module.showNotification('API data copied to clipboard!');
     });
-    
-    // Focus the editor
-    editor.focus();
 }
-
