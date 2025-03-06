@@ -34,43 +34,6 @@ export const babylonAPIData = {
         },
         "BABYLON.ProceduralTextures": {},
         "BABYLON.Serializers": {}
-    },
-    classes: {
-        BABYLON: {
-            AbortError: { type: "class" },
-            AbstractActionManager: { type: "class" },
-            AbstractAssetContainer: { type: "class" },
-            AbstractAssetTask: { type: "class" },
-            // ... and hundreds more classes
-        },
-        "BABYLON.GUI": {
-            AbstractButton3D: { type: "class" },
-            AdvancedDynamicTexture: { type: "class" },
-            AdvancedDynamicTextureInstrumentation: { type: "class" },
-            // ... and more GUI classes
-        },
-        "BABYLON.Materials": {
-            BackgroundMaterial: { type: "class" },
-            BaseTexture: { type: "class" },
-            BindTextureMatrix: { type: "class" },
-            // ... and more material classes
-        },
-        "BABYLON.PostProcesses": {
-            AnaglyphPostProcess: { type: "class" },
-            ApplyPostProcess: { type: "class" },
-            BlackAndWhitePostProcess: { type: "class" },
-            // ... and more post-process classes
-        },
-        "BABYLON.ProceduralTextures": {
-            CustomProceduralTexture: { type: "class" },
-            NoiseProceduralTexture: { type: "class" },
-            ProceduralTexture: { type: "class" },
-            // ... and more procedural texture classes
-        },
-        "BABYLON.Serializers": {
-            SceneSerializer: { type: "class" },
-            GLTFFileLoader: { type: "class" }
-        }
     }
 };
 
@@ -93,15 +56,6 @@ export function getAPIInfo(namespace, name) {
             namespace: namespace,
             name: name,
             details: babylonAPIData.properties[namespace][name]
-        };
-    }
-    
-    if (babylonAPIData.classes[namespace] && babylonAPIData.classes[namespace][name]) {
-        return {
-            type: 'class',
-            namespace: namespace,
-            name: name,
-            details: babylonAPIData.classes[namespace][name]
         };
     }
     
@@ -143,20 +97,6 @@ export function searchAPI(query) {
         });
     });
     
-    // Search in classes
-    Object.keys(babylonAPIData.classes).forEach(namespace => {
-        Object.keys(babylonAPIData.classes[namespace]).forEach(name => {
-            if (name.toLowerCase().includes(lowerQuery)) {
-                results.push({
-                    type: 'class',
-                    namespace: namespace,
-                    name: name,
-                    details: babylonAPIData.classes[namespace][name]
-                });
-            }
-        });
-    });
-    
     return results;
 }
 
@@ -188,18 +128,6 @@ export function getNamespaceItems(namespace) {
         });
     });
     
-    // Get classes
-    if (babylonAPIData.classes[namespace]) {
-        Object.keys(babylonAPIData.classes[namespace]).forEach(name => {
-            results.push({
-                type: 'class',
-                namespace: namespace,
-                name: name,
-                details: babylonAPIData.classes[namespace][name]
-            });
-        });
-    }
-    
     return results;
 }
 
@@ -223,4 +151,90 @@ export function formatAPIDataForLLM(apiData) {
         };
     }
     return null;
+}
+
+// Updates the babylonAPIData with classes information
+export function updateAPIClasses(classesData) {
+    if (!classesData) return;
+    
+    babylonAPIData.classes = {};
+    
+    // Process each namespace
+    Object.keys(classesData).forEach(namespace => {
+        babylonAPIData.classes[namespace] = {};
+        
+        // Process each class in the namespace
+        Object.keys(classesData[namespace]).forEach(className => {
+            babylonAPIData.classes[namespace][className] = classesData[namespace][className];
+        });
+    });
+}
+
+// Get class information by namespace and name
+export function getClassInfo(namespace, name) {
+    if (!namespace || !name || !babylonAPIData.classes || !babylonAPIData.classes[namespace]) {
+        return null;
+    }
+    
+    if (babylonAPIData.classes[namespace][name]) {
+        return {
+            type: 'class',
+            namespace: namespace,
+            name: name,
+            details: babylonAPIData.classes[namespace][name]
+        };
+    }
+    
+    return null;
+}
+
+// Search for classes by name
+export function searchClasses(query) {
+    if (!query || !babylonAPIData.classes) return [];
+    
+    const results = [];
+    const lowerQuery = query.toLowerCase();
+    
+    Object.keys(babylonAPIData.classes).forEach(namespace => {
+        Object.keys(babylonAPIData.classes[namespace]).forEach(name => {
+            if (name.toLowerCase().includes(lowerQuery)) {
+                results.push({
+                    type: 'class',
+                    namespace: namespace,
+                    name: name,
+                    details: babylonAPIData.classes[namespace][name]
+                });
+            }
+        });
+    });
+    
+    return results;
+}
+
+// Enhanced search that includes methods, properties and classes
+export function searchAllAPIElements(query) {
+    if (!query) return [];
+    
+    const methodResults = searchAPI(query);
+    const classResults = searchClasses(query);
+    
+    return [...methodResults, ...classResults];
+}
+
+// Get comprehensive API data for LLM processing
+export function getAPIDataForLLM(query = null) {
+    let data;
+    
+    if (query) {
+        data = searchAllAPIElements(query);
+    } else {
+        // Return a structured representation of the entire API
+        data = {
+            methods: babylonAPIData.methods,
+            properties: babylonAPIData.properties,
+            classes: babylonAPIData.classes
+        };
+    }
+    
+    return formatAPIDataForLLM(data);
 }

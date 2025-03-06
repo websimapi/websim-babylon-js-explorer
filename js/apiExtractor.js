@@ -238,6 +238,22 @@ export function exportAPIData() {
     // Also update the hidden div for LLM access
     const apiDataForLLM = document.getElementById('apiDataForLLM');
     apiDataForLLM.dataset.apiInfo = JSON.stringify(window.babylonAPIData);
+    
+    // Update classes data in the babylonAPIData
+    if (window.babylonAPIClassesData) {
+        import('./apiDataService.js').then(module => {
+            module.updateAPIClasses(window.babylonAPIClassesData);
+        });
+    }
+}
+
+export function updateClassesData(classesData) {
+    window.babylonAPIClassesData = classesData;
+    
+    // Update the babylonAPIData
+    import('./apiDataService.js').then(module => {
+        module.updateAPIClasses(classesData);
+    });
 }
 
 function showExportModal() {
