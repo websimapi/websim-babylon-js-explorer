@@ -52,6 +52,7 @@ export function runCode() {
     } catch (error) {
         console.error("Error running code:", error);
         // Create a simple scene with an error message
+        const canvas = document.getElementById("renderCanvas");
         window.scene = new BABYLON.Scene(window.engine);
         const camera = new BABYLON.ArcRotateCamera("camera", Math.PI / 2, Math.PI / 2.5, 10, new BABYLON.Vector3(0, 0, 0), window.scene);
         camera.attachControl(canvas, true);
