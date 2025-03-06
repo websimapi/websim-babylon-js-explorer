@@ -40,34 +40,33 @@ function requestLLMSuggestion(editor) {
     
     const selectedText = editor.getModel().getValueInRange(selection);
     
-    showLLMSuggestionDialog(selectedText, selection, (suggestion, accepted, lineNumbers) => {
-        if (accepted && suggestion) {
-            // If specific line numbers were provided, adjust the range accordingly
-            let targetRange = selection;
-            
-            if (lineNumbers && lineNumbers.length === 2) {
+    showLLMSuggestionDialog(selectedText, selection, (response, accepted) => {
+        if (accepted && response) {
+            if (response.type === 'full') {
+                editor.executeEdits('llm-suggestion', [
+                    {
+                        range: selection,
+                        text: response.revision
+                    }
+                ]);
+            } else if (response.type === 'lines' && response.changes) {
+                // Handle line-specific edits
                 const model = editor.getModel();
-                const startLine = selection.startLineNumber + lineNumbers[0] - 1;
-                const endLine = selection.startLineNumber + lineNumbers[1] - 1;
+                const edits = response.changes.map(change => {
+                    // Calculate range based on selection start and relative line numbers
+                    const startLineNumber = selection.startLineNumber + change.start - 1;
+                    const endLineNumber = selection.startLineNumber + change.end - 1;
+                    const startColumn = startLineNumber === selection.startLineNumber ? selection.startColumn : 1;
+                    const endColumn = endLineNumber === selection.endLineNumber ? selection.endColumn : model.getLineMaxColumn(endLineNumber);
+                    
+                    return {
+                        range: new monaco.Range(startLineNumber, startColumn, endLineNumber, endColumn),
+                        text: change.code
+                    };
+                });
                 
-                // Get the start and end positions for the specified lines
-                const startColumn = 1;
-                const endColumn = model.getLineMaxColumn(endLine);
-                
-                targetRange = new monaco.Range(
-                    startLine,
-                    startColumn,
-                    endLine,
-                    endColumn
-                );
+                editor.executeEdits('llm-suggestion', edits);
             }
-            
-            editor.executeEdits('llm-suggestion', [
-                {
-                    range: targetRange,
-                    text: suggestion
-                }
-            ]);
         }
     });
 }
@@ -88,34 +87,33 @@ function requestLLMSuggestionForScope(editor) {
         scope.endPosition.column
     );
     
-    showLLMSuggestionDialog(scope.text, range, (suggestion, accepted, lineNumbers) => {
-        if (accepted && suggestion) {
-            // If specific line numbers were provided, adjust the range accordingly
-            let targetRange = range;
-            
-            if (lineNumbers && lineNumbers.length === 2) {
+    showLLMSuggestionDialog(scope.text, range, (response, accepted) => {
+        if (accepted && response) {
+            if (response.type === 'full') {
+                editor.executeEdits('llm-suggestion', [
+                    {
+                        range: range,
+                        text: response.revision
+                    }
+                ]);
+            } else if (response.type === 'lines' && response.changes) {
+                // Handle line-specific edits
                 const model = editor.getModel();
-                const startLine = range.startLineNumber + lineNumbers[0] - 1;
-                const endLine = range.startLineNumber + lineNumbers[1] - 1;
+                const edits = response.changes.map(change => {
+                    // Calculate range based on scope start and relative line numbers
+                    const startLineNumber = scope.startPosition.lineNumber + change.start - 1;
+                    const endLineNumber = scope.startPosition.lineNumber + change.end - 1;
+                    const startColumn = startLineNumber === scope.startPosition.lineNumber ? scope.startPosition.column : 1;
+                    const endColumn = endLineNumber === scope.endPosition.lineNumber ? scope.endPosition.column : model.getLineMaxColumn(endLineNumber);
+                    
+                    return {
+                        range: new monaco.Range(startLineNumber, startColumn, endLineNumber, endColumn),
+                        text: change.code
+                    };
+                });
                 
-                // Get the start and end positions for the specified lines
-                const startColumn = 1;
-                const endColumn = model.getLineMaxColumn(endLine);
-                
-                targetRange = new monaco.Range(
-                    startLine,
-                    startColumn,
-                    endLine,
-                    endColumn
-                );
+                editor.executeEdits('llm-suggestion', edits);
             }
-            
-            editor.executeEdits('llm-suggestion', [
-                {
-                    range: targetRange,
-                    text: suggestion
-                }
-            ]);
         }
     });
 }
