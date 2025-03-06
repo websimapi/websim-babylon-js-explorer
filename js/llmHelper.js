@@ -4,16 +4,19 @@ export async function promptLLMForCodeRevision(code, instruction) {
             messages: [
                 {
                     role: "system",
-                    content: "You are an expert Babylon.js code assistant. Provide clear code revisions based on user instructions. Keep your response focused only on the code changes. Don't include explanations or markdown formatting, just the revised code."
+                    content: "You are an expert Babylon.js code assistant. Provide code revisions based on user instructions. Return only valid JSON in the format {\"revision\": \"your revised code here\"} with no markdown formatting, code blocks, or additional text."
                 },
                 {
                     role: "user",
                     content: `I need help revising this Babylon.js code:\n\n${code}\n\nInstructions: ${instruction}`
                 }
-            ]
+            ],
+            json: true
         });
         
-        return completion.content;
+        // Parse the JSON response to extract just the code
+        const responseData = JSON.parse(completion.content);
+        return responseData.revision;
     } catch (error) {
         console.error("Error getting LLM suggestions:", error);
         return null;
