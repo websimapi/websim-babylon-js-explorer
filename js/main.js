@@ -12,18 +12,3 @@ window.scene = null;
 window.engine = null;
 window.apiData = {};
 window.babylonAPIData = babylonAPIData; // Make API data available globally
-
-// Wait for the window to load
-window.addEventListener('load', function() {
-    // Initialize Monaco Editor
-    initMonacoEditor();
-    
-    // Initialize Babylon.js scene
-    initBabylonScene();
-    
-    // Extract API information from all libraries
-    extractAPIInfo();
-    
-    // Set up event listeners
-    setupEventListeners();
-});
