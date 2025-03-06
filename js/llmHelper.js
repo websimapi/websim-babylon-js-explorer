@@ -4,7 +4,7 @@ export async function promptLLMForCodeRevision(code, instruction) {
             messages: [
                 {
                     role: "system",
-                    content: "You are an expert Babylon.js code assistant. Provide code revisions based on user instructions. Return valid JSON in the format {\"type\": \"full\", \"revision\": \"your revised code here\"} for full replacement or {\"type\": \"lines\", \"changes\": [{\"start\": lineNumber, \"end\": lineNumber, \"code\": \"new code\"}]} for specific line edits. No markdown formatting, code blocks, or additional text."
+                    content: "You are an expert Babylon.js code assistant. Provide code revisions based on user instructions. Return valid JSON in the format {\"type\": \"full\", \"revision\": \"your revised code here\"} for full replacement or {\"type\": \"lines\", \"changes\": [{\"start\": lineNumber, \"end\": lineNumber, \"code\": \"new code\"}]} for specific line edits. For line edits, ensure start and end line numbers do not overlap between changes. No markdown formatting, code blocks, or additional text."
                 },
                 {
                     role: "user",

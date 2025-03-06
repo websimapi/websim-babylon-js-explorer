@@ -50,9 +50,11 @@ function requestLLMSuggestion(editor) {
                     }
                 ]);
             } else if (response.type === 'lines' && response.changes) {
-                // Handle line-specific edits
+                // Sort changes by starting line in descending order to avoid overlapping edits
+                const sortedChanges = [...response.changes].sort((a, b) => b.start - a.start);
+                
                 const model = editor.getModel();
-                const edits = response.changes.map(change => {
+                const edits = sortedChanges.map(change => {
                     // Calculate range based on selection start and relative line numbers
                     const startLineNumber = selection.startLineNumber + change.start - 1;
                     const endLineNumber = selection.startLineNumber + change.end - 1;
@@ -65,7 +67,10 @@ function requestLLMSuggestion(editor) {
                     };
                 });
                 
-                editor.executeEdits('llm-suggestion', edits);
+                // Apply each edit one at a time to avoid range conflicts
+                edits.forEach(edit => {
+                    editor.executeEdits('llm-suggestion', [edit]);
+                });
             }
         }
     });
@@ -97,9 +102,11 @@ function requestLLMSuggestionForScope(editor) {
                     }
                 ]);
             } else if (response.type === 'lines' && response.changes) {
-                // Handle line-specific edits
+                // Sort changes by starting line in descending order to avoid overlapping edits
+                const sortedChanges = [...response.changes].sort((a, b) => b.start - a.start);
+                
                 const model = editor.getModel();
-                const edits = response.changes.map(change => {
+                const edits = sortedChanges.map(change => {
                     // Calculate range based on scope start and relative line numbers
                     const startLineNumber = scope.startPosition.lineNumber + change.start - 1;
                     const endLineNumber = scope.startPosition.lineNumber + change.end - 1;
@@ -112,7 +119,10 @@ function requestLLMSuggestionForScope(editor) {
                     };
                 });
                 
-                editor.executeEdits('llm-suggestion', edits);
+                // Apply each edit one at a time to avoid range conflicts
+                edits.forEach(edit => {
+                    editor.executeEdits('llm-suggestion', [edit]);
+                });
             }
         }
     });
