@@ -1,3 +1,5 @@
+import { showLLMSuggestionDialog, getScopeFromPosition } from './llmHelper.js';
+
 export function initMonacoEditor() {
     require.config({ paths: { 'vs': 'https://cdn.jsdelivr.net/npm/monaco-editor@0.34.0/min/vs' }});
     require(['vs/editor/editor.main'], function() {
@@ -5,8 +7,76 @@ export function initMonacoEditor() {
             value: getDefaultCode(),
             language: 'javascript',
             theme: 'vs-dark',
-            automaticLayout: true
+            automaticLayout: true,
+            contextmenu: true
         });
+        
+        // Add command for requesting LLM suggestion on selection
+        window.editor.addAction({
+            id: 'request-llm-suggestion',
+            label: 'Ask AI to Revise Code',
+            keybindings: [monaco.KeyMod.CtrlCmd | monaco.KeyMod.Shift | monaco.KeyCode.KeyL],
+            contextMenuGroupId: 'ai',
+            run: requestLLMSuggestion
+        });
+        
+        // Add command for scope selection and LLM suggestion
+        window.editor.addAction({
+            id: 'request-llm-suggestion-scope',
+            label: 'Ask AI to Revise Current Scope',
+            keybindings: [monaco.KeyMod.CtrlCmd | monaco.KeyMod.Shift | monaco.KeyCode.KeyS],
+            contextMenuGroupId: 'ai',
+            run: requestLLMSuggestionForScope
+        });
+    });
+}
+
+function requestLLMSuggestion(editor) {
+    const selection = editor.getSelection();
+    if (!selection || selection.isEmpty()) {
+        alert('Please select code to revise first');
+        return;
+    }
+    
+    const selectedText = editor.getModel().getValueInRange(selection);
+    
+    showLLMSuggestionDialog(selectedText, selection, (suggestion, accepted) => {
+        if (accepted && suggestion) {
+            editor.executeEdits('llm-suggestion', [
+                {
+                    range: selection,
+                    text: suggestion
+                }
+            ]);
+        }
+    });
+}
+
+function requestLLMSuggestionForScope(editor) {
+    const position = editor.getPosition();
+    const scope = getScopeFromPosition(editor, position);
+    
+    if (!scope) {
+        alert('Could not detect a code scope at the cursor position. Please place cursor inside a function or block.');
+        return;
+    }
+    
+    const range = new monaco.Range(
+        scope.startPosition.lineNumber,
+        scope.startPosition.column,
+        scope.endPosition.lineNumber,
+        scope.endPosition.column
+    );
+    
+    showLLMSuggestionDialog(scope.text, range, (suggestion, accepted) => {
+        if (accepted && suggestion) {
+            editor.executeEdits('llm-suggestion', [
+                {
+                    range: range,
+                    text: suggestion
+                }
+            ]);
+        }
     });
 }
 
