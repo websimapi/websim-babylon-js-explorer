@@ -1,10 +1,10 @@
 // Main entry point for the application
-import { initMonacoEditor } from 'editor/editor.js';
-import { initBabylonScene, runCode } from 'scene/babylonScene.js';
-import { extractAPIInfo, populateAPITree, filterAPITree } from 'api/apiExtractor.js';
-import { setupEventListeners } from 'core/eventHandlers.js';
+import { initMonacoEditor } from './editor.js';
+import { initBabylonScene, runCode } from './babylonScene.js';
+import { extractAPIInfo, populateAPITree, filterAPITree } from './apiExtractor.js';
+import { setupEventListeners } from './eventHandlers.js';
 import { showNotification } from './utils.js';
-import { babylonAPIData, updateAPIClasses } from 'api/apiDataService.js';
+import { babylonAPIData, updateAPIClasses } from './apiDataService.js';
 
 // Global variables that need to be accessed across modules
 window.editor = null;
