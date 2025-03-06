@@ -234,6 +234,10 @@ export function filterAPITree(searchText) {
 export function exportAPIData() {
     // Show export settings modal
     showExportModal();
+    
+    // Also update the hidden div for LLM access
+    const apiDataForLLM = document.getElementById('apiDataForLLM');
+    apiDataForLLM.dataset.apiInfo = JSON.stringify(window.babylonAPIData);
 }
 
 function showExportModal() {
