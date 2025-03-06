@@ -28,17 +28,6 @@ export function initMonacoEditor() {
             contextMenuGroupId: 'ai',
             run: requestLLMSuggestionForScope
         });
-        
-        // Listen for editor content changes to mark files as unsaved
-        window.editor.onDidChangeModelContent((e) => {
-            // Dispatch an event to inform other components
-            const event = new CustomEvent('editor-content-changed');
-            document.dispatchEvent(event);
-        });
-        
-        // Dispatch an event to inform other components that the editor is ready
-        const event = new CustomEvent('editor-ready');
-        document.dispatchEvent(event);
     });
 }
 
@@ -172,31 +161,6 @@ const createdScene = createScene();
 
 // Make sure to return the created scene
 return createdScene;`;
-}
-
-export function setEditorLanguage(filename) {
-    if (!window.editor) return;
-    
-    const extension = filename.split('.').pop().toLowerCase();
-    let language = 'plaintext';
-    
-    switch (extension) {
-        case 'js':
-            language = 'javascript';
-            break;
-        case 'html':
-            language = 'html';
-            break;
-        case 'css':
-            language = 'css';
-            break;
-        case 'json':
-            language = 'json';
-            break;
-    }
-    
-    const model = window.editor.getModel();
-    monaco.editor.setModelLanguage(model, language);
 }
 
 export function insertCodeSnippet(namespace, key, type) {

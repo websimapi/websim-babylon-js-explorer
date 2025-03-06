@@ -3,7 +3,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Babylon.js Explorer</title>
-    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="css/styles.css">
     <!-- Monaco Editor CDN -->
     <script src="https://cdn.jsdelivr.net/npm/monaco-editor@0.34.0/min/vs/loader.js"></script>
     <!-- Babylon.js Core -->
@@ -20,7 +20,13 @@
     <script type="importmap">
         {
             "imports": {
-                "app/": "./js/"
+                "app/": "./js/",
+                "core/": "./js/core/",
+                "scene/": "./js/scene/",
+                "api/": "./js/api/",
+                "ui/": "./js/ui/",
+                "editor/": "./js/editor/",
+                "utils/": "./js/utils/"
             }
         }
     </script>
@@ -60,39 +66,24 @@
             <div class="sidebar-header">
                 <h2>Babylon.js Explorer</h2>
             </div>
-            <div class="sidebar-tabs">
-                <div class="tab active" data-tab="api">API</div>
-                <div class="tab" data-tab="project">Project</div>
+            <div class="library-selector">
+                <select id="librarySelect">
+                    <option value="BABYLON">BABYLON (Core)</option>
+                    <option value="BABYLON.GUI">BABYLON.GUI</option>
+                    <option value="BABYLON.Materials">BABYLON.Materials</option>
+                    <option value="BABYLON.PostProcesses">BABYLON.PostProcesses</option>
+                    <option value="BABYLON.ProceduralTextures">BABYLON.ProceduralTextures</option>
+                    <option value="BABYLON.Serializers">BABYLON.Serializers</option>
+                </select>
             </div>
-            <div class="tab-content" id="apiTab">
-                <div class="library-selector">
-                    <select id="librarySelect">
-                        <option value="BABYLON">BABYLON (Core)</option>
-                        <option value="BABYLON.GUI">BABYLON.GUI</option>
-                        <option value="BABYLON.Materials">BABYLON.Materials</option>
-                        <option value="BABYLON.PostProcesses">BABYLON.PostProcesses</option>
-                        <option value="BABYLON.ProceduralTextures">BABYLON.ProceduralTextures</option>
-                        <option value="BABYLON.Serializers">BABYLON.Serializers</option>
-                    </select>
-                </div>
-                <div class="search-bar">
-                    <input type="text" id="searchInput" placeholder="Search APIs...">
-                </div>
-                <div class="api-tree-container">
-                    <ul id="apiTree" class="api-tree"></ul>
-                </div>
-                <div class="export-container">
-                    <button id="exportButton">Export API Data</button>
-                </div>
+            <div class="search-bar">
+                <input type="text" id="searchInput" placeholder="Search APIs...">
             </div>
-            <div class="tab-content" id="projectTab" style="display: none;">
-                <div class="project-controls">
-                    <button id="newFileBtn">New File</button>
-                    <button id="newFolderBtn">New Folder</button>
-                </div>
-                <div class="file-tree-container">
-                    <ul id="fileTree" class="file-tree"></ul>
-                </div>
+            <div class="api-tree-container">
+                <ul id="apiTree" class="api-tree"></ul>
+            </div>
+            <div class="export-container">
+                <button id="exportButton">Export API Data</button>
             </div>
         </div>
         <div class="main-content">

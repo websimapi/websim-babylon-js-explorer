@@ -3,15 +3,14 @@ import { runCode, resetView, toggleInspector } from './babylonScene.js';
 import { populateAPITree, filterAPITree, exportAPIData } from './apiExtractor.js';
 
 export function setupEventListeners() {
+    // Run Code button
+    document.getElementById('runButton').addEventListener('click', function() {
+        runCode();
+    });
+    
     // Clear button
     document.getElementById('clearButton').addEventListener('click', function() {
-        if (window.projectManager && window.projectManager.openFilePath) {
-            if (confirm('Reset the current file to default code?')) {
-                window.editor.setValue(getDefaultCode());
-            }
-        } else {
-            window.editor.setValue(getDefaultCode());
-        }
+        window.editor.setValue(getDefaultCode());
     });
     
     // Toggle Inspector button
