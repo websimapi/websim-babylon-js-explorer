@@ -4,7 +4,7 @@ export async function promptLLMForCodeRevision(code, instruction) {
             messages: [
                 {
                     role: "system",
-                    content: "You are an expert Babylon.js code assistant. Provide code revisions based on user instructions. Return only valid JSON in the format {\"revision\": \"your revised code here\"} with no markdown formatting, code blocks, or additional text."
+                    content: "You are an expert Babylon.js code assistant. Provide code revisions based on user instructions. If you want to modify specific lines, include line numbers in your response. Return only valid JSON in the format {\"revision\": \"your revised code here\", \"lineNumbers\": [start, end]} with no markdown formatting, code blocks, or additional text. If you want to modify the entire selection, omit the lineNumbers property."
                 },
                 {
                     role: "user",
@@ -14,9 +14,9 @@ export async function promptLLMForCodeRevision(code, instruction) {
             json: true
         });
         
-        // Parse the JSON response to extract just the code
+        // Parse the JSON response to extract the code and optional line numbers
         const responseData = JSON.parse(completion.content);
-        return responseData.revision;
+        return responseData;
     } catch (error) {
         console.error("Error getting LLM suggestions:", error);
         return null;
@@ -63,7 +63,9 @@ export function showLLMSuggestionDialog(originalCode, selectedScope, callback) {
             closeDialog();
         });
         
-        document.getElementById('submitPromptBtn').addEventListener('click', async () => {
+        const submitBtn = document.getElementById('submitPromptBtn');
+        
+        submitBtn.addEventListener('click', async () => {
             const promptInput = document.getElementById('promptInput');
             const instruction = promptInput.value.trim();
             
@@ -77,18 +79,20 @@ export function showLLMSuggestionDialog(originalCode, selectedScope, callback) {
             document.querySelector('.llm-loading').style.display = 'block';
             
             // Get suggestion from LLM
-            const suggestion = await promptLLMForCodeRevision(originalCode, instruction);
+            const response = await promptLLMForCodeRevision(originalCode, instruction);
             
             // Hide loading, show result
             document.querySelector('.llm-loading').style.display = 'none';
             document.querySelector('.llm-result').style.display = 'block';
             
             // Display suggestion
-            document.getElementById('llmSuggestion').textContent = suggestion || "Unable to generate suggestion";
+            document.getElementById('llmSuggestion').textContent = response?.revision || "Unable to generate suggestion";
             
             // Set up decision buttons
             document.getElementById('acceptSuggestionBtn').onclick = () => {
-                callback(suggestion, true);
+                if (response) {
+                    callback(response.revision, true, response.lineNumbers);
+                }
                 closeDialog();
             };
             
