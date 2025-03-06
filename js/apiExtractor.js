@@ -232,7 +232,129 @@ export function filterAPITree(searchText) {
 }
 
 export function exportAPIData() {
-    const exportData = JSON.stringify(window.apiData, null, 2);
+    // Show export settings modal
+    showExportModal();
+}
+
+function showExportModal() {
+    // Create modal if it doesn't exist
+    let modal = document.getElementById('exportModal');
+    if (!modal) {
+        modal = document.createElement('div');
+        modal.id = 'exportModal';
+        modal.className = 'export-modal';
+        modal.innerHTML = `
+            <div class="export-modal-content">
+                <h3>Export Settings</h3>
+                <div class="export-options">
+                    <label><input type="checkbox" id="exportMethods" checked> Methods</label>
+                    <label><input type="checkbox" id="exportProperties" checked> Properties</label>
+                    <label><input type="checkbox" id="exportClasses" checked> Classes</label>
+                    <label><input type="checkbox" id="exportAll"> All (Override)</label>
+                </div>
+                <div class="export-buttons">
+                    <button id="exportConfirm">Export</button>
+                    <button id="exportCancel">Cancel</button>
+                </div>
+            </div>
+        `;
+        document.body.appendChild(modal);
+        
+        // Set up event listeners
+        document.getElementById('exportAll').addEventListener('change', function() {
+            const checked = this.checked;
+            document.getElementById('exportMethods').checked = checked;
+            document.getElementById('exportProperties').checked = checked;
+            document.getElementById('exportClasses').checked = checked;
+            
+            // Disable individual checkboxes if "All" is checked
+            const checkboxes = document.querySelectorAll('#exportMethods, #exportProperties, #exportClasses');
+            checkboxes.forEach(checkbox => {
+                checkbox.disabled = checked;
+            });
+        });
+        
+        document.getElementById('exportConfirm').addEventListener('click', function() {
+            const includeMethods = document.getElementById('exportMethods').checked;
+            const includeProperties = document.getElementById('exportProperties').checked;
+            const includeClasses = document.getElementById('exportClasses').checked;
+            
+            performExport(includeMethods, includeProperties, includeClasses);
+            modal.style.display = 'none';
+        });
+        
+        document.getElementById('exportCancel').addEventListener('click', function() {
+            modal.style.display = 'none';
+        });
+    }
+    
+    // Reset checkboxes to default state
+    document.getElementById('exportMethods').checked = true;
+    document.getElementById('exportMethods').disabled = false;
+    document.getElementById('exportProperties').checked = true;
+    document.getElementById('exportProperties').disabled = false;
+    document.getElementById('exportClasses').checked = true;
+    document.getElementById('exportClasses').disabled = false;
+    document.getElementById('exportAll').checked = false;
+    
+    // Show modal
+    modal.style.display = 'flex';
+}
+
+function performExport(includeMethods, includeProperties, includeClasses) {
+    // Filter API data based on selected options
+    const filteredData = {};
+    
+    for (const namespace in window.apiData) {
+        filteredData[namespace] = {};
+        
+        for (const key in window.apiData[namespace]) {
+            const item = window.apiData[namespace][key];
+            
+            if ((item.type === 'method' && includeMethods) || 
+                (item.type === 'property' && includeProperties) || 
+                (item.type === 'class' && includeClasses)) {
+                
+                const filteredItem = JSON.parse(JSON.stringify(item));
+                
+                // Filter class members if necessary
+                if (item.type === 'class') {
+                    // Filter static members
+                    if (item.static && !includeMethods && !includeProperties) {
+                        delete filteredItem.static;
+                    } else if (item.static) {
+                        filteredItem.static = {};
+                        for (const staticKey in item.static) {
+                            const staticItem = item.static[staticKey];
+                            if ((staticItem.type === 'method' && includeMethods) || 
+                                (staticItem.type === 'property' && includeProperties)) {
+                                filteredItem.static[staticKey] = staticItem;
+                            }
+                        }
+                    }
+                    
+                    // Filter prototype members
+                    if (item.prototype && !includeMethods && !includeProperties) {
+                        delete filteredItem.prototype;
+                    } else if (item.prototype) {
+                        filteredItem.prototype = {};
+                        for (const protoKey in item.prototype) {
+                            const protoItem = item.prototype[protoKey];
+                            if ((protoItem.type === 'method' && includeMethods) || 
+                                (protoItem.type === 'property' && includeProperties)) {
+                                filteredItem.prototype[protoKey] = protoItem;
+                            }
+                        }
+                    }
+                }
+                
+                filteredData[namespace][key] = filteredItem;
+            }
+        }
+    }
+    
+    // Export the filtered data
+    const exportData = JSON.stringify(filteredData, null, 2);
     const exportArea = document.getElementById('exportArea');
     exportArea.value = exportData;
     exportArea.select();

@@ -24,35 +24,6 @@
             }
         }
     </script>
-    <script>
-        // Add global websim object to allow LLM interactions
-        window.websim = window.websim || {};
-        window.websim.chat = window.websim.chat || {
-            completions: {
-                create: async function(options) {
-                    try {
-                        const response = await fetch('/api/chat-completions', {
-                            method: 'POST',
-                            headers: { 'Content-Type': 'application/json' },
-                            body: JSON.stringify(options)
-                        });
-                        
-                        if (!response.ok) {
-                            throw new Error('Network response was not ok');
-                        }
-                        
-                        const data = await response.json();
-                        return {
-                            content: data.content
-                        };
-                    } catch (error) {
-                        console.error('Error calling LLM API:', error);
-                        return { content: 'Error: Unable to get suggestion' };
-                    }
-                }
-            }
-        };
-    </script>
 </head>
 <body>
     <div class="container">
@@ -99,8 +70,6 @@
     </div>
     <!-- Hidden textarea for copying -->
     <textarea id="exportArea" style="position: absolute; left: -9999px;"></textarea>
-    <!-- Hidden div for storing API data for LLM -->
-    <div id="apiDataForLLM" style="display: none;" data-api-info="{}"></div>
     <!-- Main script using modules -->
     <script type="module" src="js/main.js"></script>
 <script defer src="https://static.cloudflareinsights.com/beacon.min.js/v8c78df7c7c0f484497ecbca7046644da1771523124516" integrity="sha512-8DS7rgIrAmghBFwoOTujcf6D9rXvH8xm8JQ1Ja01h9QX8EzXldiszufYa4IFfKdLUKTTrnSFXLDkUEOTrZQ8Qg==" data-cf-beacon='{"version":"2024.11.0","token":"4c6229722a6346bc8eb5cb0e5eae5d41","server_timing":{"name":{"cfCacheStatus":true,"cfEdge":true,"cfExtPri":true,"cfL4":true,"cfOrigin":true,"cfSpeedBrain":true},"location_startswith":null}}' crossorigin="anonymous"></script>

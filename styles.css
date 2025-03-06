@@ -153,6 +153,67 @@ button:hover {
     background-color: #0091ea;
 }
 
+.export-modal {
+    display: none;
+    position: fixed;
+    z-index: 1000;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.7);
+    justify-content: center;
+    align-items: center;
+}
+
+.export-modal-content {
+    background-color: #2d2d2d;
+    padding: 20px;
+    border-radius: 5px;
+    width: 400px;
+    color: white;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+}
+
+.export-modal-content h3 {
+    margin-top: 0;
+    padding-bottom: 10px;
+    border-bottom: 1px solid #444;
+}
+
+.export-options {
+    margin: 20px 0;
+}
+
+.export-options label {
+    display: block;
+    margin: 10px 0;
+    cursor: pointer;
+}
+
+.export-options input[type="checkbox"] {
+    margin-right: 10px;
+}
+
+.export-buttons {
+    display: flex;
+    justify-content: flex-end;
+    margin-top: 20px;
+}
+
+.export-buttons button {
+    margin-left: 10px;
+    padding: 8px 15px;
+}
+
+.export-buttons button:first-child {
+    background-color: #007acc;
+}
+
+.export-buttons button:first-child:hover {
+    background-color: #0091ea;
+}
+
 .notification {
     position: fixed;
     bottom: 20px;
