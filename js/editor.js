@@ -130,7 +130,7 @@ function requestLLMSuggestionForScope(editor) {
 
 export function getDefaultCode() {
     return `// Create a simple scene with a sphere
-function createScene() {
+function createScene(engine, canvas) {
     // Create a basic Babylon Scene object
     const scene = new BABYLON.Scene(engine);
     
@@ -157,7 +157,7 @@ function createScene() {
 }
 
 // Call createScene to get our scene
-const createdScene = createScene();
+const createdScene = createScene(engine, canvas);
 
 // Make sure to return the created scene
 return createdScene;`;

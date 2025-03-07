@@ -30,7 +30,7 @@ export function runCode() {
             window.scene.dispose();
         }
         
-        // Get canvas
+        // Get canvas - ensure we're getting it within this function scope
         const canvas = document.getElementById("renderCanvas");
         
         // Evaluate the code from the editor to create a new scene
@@ -53,6 +53,7 @@ export function runCode() {
         console.error("Error running code:", error);
         // Create a simple scene with an error message
         window.scene = new BABYLON.Scene(window.engine);
+        const canvas = document.getElementById("renderCanvas");
         const camera = new BABYLON.ArcRotateCamera("camera", Math.PI / 2, Math.PI / 2.5, 10, new BABYLON.Vector3(0, 0, 0), window.scene);
         camera.attachControl(canvas, true);
         const light = new BABYLON.HemisphericLight("light", new BABYLON.Vector3(0, 1, 0), window.scene);
