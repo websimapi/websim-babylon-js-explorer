@@ -5,6 +5,7 @@ import { extractAPIInfo, populateAPITree, filterAPITree } from './apiExtractor.j
 import { setupEventListeners } from './eventHandlers.js';
 import { showNotification } from './utils.js';
 import { babylonAPIData, updateAPIClasses } from './apiDataService.js';
+import { initProjectManager } from './projectManager.js';
 
 // Global variables that need to be accessed across modules
 window.editor = null;
@@ -12,6 +13,8 @@ window.scene = null;
 window.engine = null;
 window.apiData = {};
 window.babylonAPIData = babylonAPIData; // Make API data available globally
+window.projectFiles = null;
+window.currentFile = null;
 
 // Sample classes data structure to be populated
 const classesData = {
@@ -30,6 +33,9 @@ window.addEventListener('load', function() {
     
     // Initialize Babylon.js scene
     initBabylonScene();
+    
+    // Initialize project manager
+    initProjectManager();
     
     // Extract API information from all libraries
     extractAPIInfo();

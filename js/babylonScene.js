@@ -30,11 +30,19 @@ export function runCode() {
             window.scene.dispose();
         }
         
-        // Get canvas - ensure we're getting it within this function scope
+        // Get canvas
         const canvas = document.getElementById("renderCanvas");
         
-        // Evaluate the code from the editor to create a new scene
-        const createSceneFunction = new Function('engine', 'canvas', window.editor.getValue());
+        // Save all files first
+        if (window.currentFile) {
+            window.projectFiles[window.currentFile] = window.editor.getValue();
+        }
+        
+        // Create a dynamic module loader
+        const moduleCode = createModuleCode();
+        
+        // Evaluate the code from the modules to create a new scene
+        const createSceneFunction = new Function('engine', 'canvas', moduleCode);
         window.scene = createSceneFunction(window.engine, canvas);
         
         // Check if the scene was created correctly
@@ -53,7 +61,6 @@ export function runCode() {
         console.error("Error running code:", error);
         // Create a simple scene with an error message
         window.scene = new BABYLON.Scene(window.engine);
-        const canvas = document.getElementById("renderCanvas");
         const camera = new BABYLON.ArcRotateCamera("camera", Math.PI / 2, Math.PI / 2.5, 10, new BABYLON.Vector3(0, 0, 0), window.scene);
         camera.attachControl(canvas, true);
         const light = new BABYLON.HemisphericLight("light", new BABYLON.Vector3(0, 1, 0), window.scene);
@@ -66,6 +73,36 @@ export function runCode() {
         errorText.fontSize = 24;
         advancedTexture.addControl(errorText);
     }
+}
+
+function createModuleCode() {
+    // Create a module system
+    let code = `
+        // Create a module system
+        const modules = {};
+        
+        // Define each file as a module
+        ${Object.entries(window.projectFiles).map(([filename, content]) => `
+        modules['${filename}'] = (function(exports) {
+            ${content}
+            return exports;
+        })({});`).join('\n')}
+        
+        // Simple import function for modules
+        function import(path) {
+            if (!modules[path]) {
+                throw new Error('Module not found: ' + path);
+            }
+            return modules[path];
+        }
+        
+        // Run main.js if it exists, otherwise run current file
+        ${window.projectFiles['main.js'] ? 
+            'return modules["main.js"];' : 
+            `return (function() { ${window.projectFiles[window.currentFile]} })();`}
+    `;
+    
+    return code;
 }
 
 export function resetView() {

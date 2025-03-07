@@ -60,28 +60,50 @@
             <div class="sidebar-header">
                 <h2>Babylon.js Explorer</h2>
             </div>
-            <div class="library-selector">
-                <select id="librarySelect">
-                    <option value="BABYLON">BABYLON (Core)</option>
-                    <option value="BABYLON.GUI">BABYLON.GUI</option>
-                    <option value="BABYLON.Materials">BABYLON.Materials</option>
-                    <option value="BABYLON.PostProcesses">BABYLON.PostProcesses</option>
-                    <option value="BABYLON.ProceduralTextures">BABYLON.ProceduralTextures</option>
-                    <option value="BABYLON.Serializers">BABYLON.Serializers</option>
-                </select>
+            <div class="tabs">
+                <button class="tab-button active" data-tab="project">Project</button>
+                <button class="tab-button" data-tab="api">API</button>
             </div>
-            <div class="search-bar">
-                <input type="text" id="searchInput" placeholder="Search APIs...">
+            <div class="tab-content active" id="project-tab">
+                <div class="project-header">
+                    <h3>Project Files</h3>
+                    <div class="file-buttons">
+                        <button id="addFileButton" title="Add File"><i class="fas fa-plus"></i></button>
+                        <button id="renameFileButton" title="Rename File"><i class="fas fa-edit"></i></button>
+                        <button id="deleteFileButton" title="Delete File"><i class="fas fa-trash"></i></button>
+                    </div>
+                </div>
+                <div class="project-tree">
+                    <ul id="fileTree" class="file-tree"></ul>
+                </div>
             </div>
-            <div class="api-tree-container">
-                <ul id="apiTree" class="api-tree"></ul>
-            </div>
-            <div class="export-container">
-                <button id="exportButton">Export API Data</button>
+            <div class="tab-content" id="api-tab">
+                <div class="library-selector">
+                    <select id="librarySelect">
+                        <option value="BABYLON">BABYLON (Core)</option>
+                        <option value="BABYLON.GUI">BABYLON.GUI</option>
+                        <option value="BABYLON.Materials">BABYLON.Materials</option>
+                        <option value="BABYLON.PostProcesses">BABYLON.PostProcesses</option>
+                        <option value="BABYLON.ProceduralTextures">BABYLON.ProceduralTextures</option>
+                        <option value="BABYLON.Serializers">BABYLON.Serializers</option>
+                    </select>
+                </div>
+                <div class="search-bar">
+                    <input type="text" id="searchInput" placeholder="Search APIs...">
+                </div>
+                <div class="api-tree-container">
+                    <ul id="apiTree" class="api-tree"></ul>
+                </div>
+                <div class="export-container">
+                    <button id="exportButton">Export API Data</button>
+                </div>
             </div>
         </div>
         <div class="main-content">
             <div class="editor-container">
+                <div class="editor-header">
+                    <span id="currentFileName">scene.js</span>
+                </div>
                 <div id="codeEditor"></div>
                 <div class="editor-controls">
                     <button id="runButton">Run Code</button>

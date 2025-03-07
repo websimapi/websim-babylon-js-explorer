@@ -129,38 +129,33 @@ function requestLLMSuggestionForScope(editor) {
 }
 
 export function getDefaultCode() {
-    return `// Create a simple scene with a sphere
-function createScene(engine, canvas) {
-    // Create a basic Babylon Scene object
-    const scene = new BABYLON.Scene(engine);
-    
-    // Create a camera
-    const camera = new BABYLON.ArcRotateCamera("camera", 
-        Math.PI / 2, Math.PI / 2.5, 10, 
-        new BABYLON.Vector3(0, 0, 0), scene);
-    camera.attachControl(canvas, true);
-    
-    // Create a light
-    const light = new BABYLON.HemisphericLight("light", 
-        new BABYLON.Vector3(0, 1, 0), scene);
-    
-    // Create a sphere
-    const sphere = BABYLON.MeshBuilder.CreateSphere("sphere", 
-        {diameter: 2, segments: 32}, scene);
-    
-    // Create a material
-    const material = new BABYLON.StandardMaterial("material", scene);
-    material.diffuseColor = new BABYLON.Color3(0, 0.5, 0.7);
-    sphere.material = material;
-    
-    return scene;
-}
+    return `// Default Scene File
+// This file defines the main scene setup
 
-// Call createScene to get our scene
-const createdScene = createScene(engine, canvas);
+// Create a basic Babylon Scene object
+const scene = new BABYLON.Scene(engine);
 
-// Make sure to return the created scene
-return createdScene;`;
+// Create a camera
+const camera = new BABYLON.ArcRotateCamera("camera", 
+    Math.PI / 2, Math.PI / 2.5, 10, 
+    new BABYLON.Vector3(0, 0, 0), scene);
+camera.attachControl(canvas, true);
+
+// Create a light
+const light = new BABYLON.HemisphericLight("light", 
+    new BABYLON.Vector3(0, 1, 0), scene);
+
+// Create a sphere
+const sphere = BABYLON.MeshBuilder.CreateSphere("sphere", 
+    {diameter: 2, segments: 32}, scene);
+
+// Create a material
+const material = new BABYLON.StandardMaterial("material", scene);
+material.diffuseColor = new BABYLON.Color3(0, 0.5, 0.7);
+sphere.material = material;
+
+// Return the scene
+return scene;`;
 }
 
 export function insertCodeSnippet(namespace, key, type) {
