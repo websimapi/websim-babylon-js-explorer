@@ -7,9 +7,20 @@ export function initMonacoEditor() {
             value: getDefaultCode(),
             language: 'javascript',
             theme: 'vs-dark',
-            automaticLayout: true,
+            automaticLayout: false,
             contextmenu: true
         });
+        
+        // Add debounced resize handler to avoid ResizeObserver loop errors
+        const resizeEditor = debounce(() => {
+            if (window.editor) {
+                window.editor.layout();
+            }
+        }, 100);
+        
+        // Add resize observer with debounced handler
+        const resizeObserver = new ResizeObserver(resizeEditor);
+        resizeObserver.observe(document.getElementById('codeEditor'));
         
         // Add command for requesting LLM suggestion on selection
         window.editor.addAction({
@@ -126,6 +137,19 @@ function requestLLMSuggestionForScope(editor) {
             }
         }
     });
+}
+
+// Add debounce utility function
+function debounce(func, wait) {
+    let timeout;
+    return function executedFunction(...args) {
+        const later = () => {
+            clearTimeout(timeout);
+            func(...args);
+        };
+        clearTimeout(timeout);
+        timeout = setTimeout(later, wait);
+    };
 }
 
 export function getDefaultCode() {
